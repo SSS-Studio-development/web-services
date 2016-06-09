@@ -1,0 +1,18 @@
+#+TITLE: Web application for phonetic translation
+#+AUTHOR: Raj Manvar
+#+DATE: [2016-06-09 Thu]
+
+* Overview
+ 
+  Phonetic translation helps for pronunciation of words using special
+  characters which have different pronunciation.
+  All the characters used in the phonetic translation are described in UTF-8
+  character set.
+
+* Implementation
+
+  About 1000 words with their phonetic translation are described at
+  www.phonemicchart.com . The translations are taken from the webpage of the
+  website.
+
+ 
