@@ -3,7 +3,7 @@ from flask import request
 import requests as req
 import bs4
 
-@app.route("/translate", methods=['GET'])
+@app.route("/translate", methods=['POST'])
 def trans():
 
     print request.json
@@ -17,9 +17,9 @@ def trans():
         print word
         res = req.get('http://www.phonemicchart.com/transcribe/?w='+word)
         soup = bs4.BeautifulSoup(res.text)
-        ret = str(soup.center)
+        ret = soup.center
         if ret:
-            answer.append(ret)
+            answer.append(ret.string)
         else :
             answer.append(word)
 
