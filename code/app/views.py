@@ -37,3 +37,7 @@ def datetrans():
     except :
         return 'new date format not valid'
     return datetime.strftime(date,forma)
+
+@app.route("/test",methods=['GET'])
+def test():
+    return { 'test' : 'string' }
