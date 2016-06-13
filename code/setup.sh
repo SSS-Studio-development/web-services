@@ -34,3 +34,5 @@ if [ "" == "$PKG_OK" ]; then
       echo "No python-requests. Setting up python-requests."
       flask/bin/pip install requests
 fi
+
+flask/bin/pip install -U flask-cors
