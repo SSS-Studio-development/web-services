@@ -26,7 +26,8 @@ def trans():
         else :
             answer.append(word)
 
-            return " ".join(answer)
+
+    return " ".join(answer)
 
 
 @app.route("/test", methods=['GET'])
