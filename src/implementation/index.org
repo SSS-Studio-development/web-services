@@ -1,9 +1,9 @@
-#+title: Implementation of web services 
+#+title:  Object  Implementation of Mini Version of User Directory Application
 #+AUTHOR: VLEAD
 #+DATE: [2016-05-11 Wed]
 #+PROPERTY: results output
 #+PROPERTY: exports code
-#+SETUPFILE: ../org-templates/level-0.org
+#+SETUPFILE: ../../../org-templates/level-0.org
 #+options: ^:nil
 #+LATEX: Literal LaTeX code for export
 
@@ -11,25 +11,9 @@
 * Initialization
 
 ** Imports for Python API
-#+BEGIN_SRC python :tangle ../../code/app/__init__.py :eval no
+#+BEGIN_SRC python :tangle ../../src/obj.py :eval no
 # -*- coding: utf-8 -*-
-
-from flask import Flask
-from flask import request
-from flask_cors import CORS
-from flask import request
-import requests as req
-import bs4
-from dateutil.parser import parse
-from datetime import datetime
-from flask_cors import CORS
-
-
+from op_exceptions import AttributeRequired
+from utils import *
 #+END_SRC
-
-
-
-
-
-
 

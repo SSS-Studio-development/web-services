@@ -9,3 +9,4 @@ flask
 src/r0_sss*.org
 build
 elisp
+literate-tools

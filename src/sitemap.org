@@ -1,7 +1,7 @@
 #+TITLE: Sitemap for project org-docs
 
    + implementation
-     + [[file:implementation/index.org][Implementation of web services]]
+     + [[file:implementation/index.org][Object  Implementation of Mini Version of User Directory Application]]
    + org-templates
      + [[file:org-templates/level-0.org][level-0]]
      + [[file:org-templates/level-1.org][level-1]]
