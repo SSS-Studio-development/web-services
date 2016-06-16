@@ -2,6 +2,7 @@
 
    + docs
      + [[file:docs/index.org][Documentation of Adding phonetic translations for renarration web application]]
+     + [[file:docs/words_list.org][words_list]]
    + implementation
      + [[file:implementation/index.org][Implemention of  Adding phonetic translations for renarration web application]]
    + org-templates
