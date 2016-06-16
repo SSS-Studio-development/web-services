@@ -8,3 +8,4 @@ dump_app.py
 flask
 src/r0_sss*.org
 build
+elisp
