@@ -2,8 +2,12 @@ from app import app
 from flask import request
 import requests as req
 import bs4
+import pickle
 from dateutil.parser import parse
 from datetime import datetime
+
+word_list = pickle.load( open( "word_list.p", "rb" ) )
+
 
 @app.route("/translate", methods=['POST'])
 def trans():
@@ -12,6 +16,25 @@ def trans():
     words = sentence.split()
     answer = []
     for word in words :
+
+        word = word.lower()
+        if word in word_list:
+            answer.append(word_list[word])
+        else :
+            answer.append(word)
+
+
+    return " ".join(answer)
+
+@app.route("/translatelive", methods=['POST'])
+def translive():
+
+    sentence = request.json['sentence']
+    words = sentence.split()
+    answer = []
+    for word in words :
+
+        word = word.lower()
         res = req.get('http://www.phonemicchart.com/transcribe/?w='+word)
         soup = bs4.BeautifulSoup(res.text)
         ret = soup.center
@@ -20,24 +43,10 @@ def trans():
         else :
             answer.append(word)
 
+
     return " ".join(answer)
 
-@app.route("/date-translate", methods=['POST'])
-def datetrans():
-    try :
-        date_str = request.json['date']
-    except :
-        return 'Error occured, date format not valid or date not passed'
-    try :
-        forma = request.json['format']
-    except:
-        return 'format not provided'
-    try:
-        date = parse(date_str)
-    except :
-        return 'new date format not valid'
-    return datetime.strftime(date,forma)
 
-@app.route("/test",methods=['GET'])
+@app.route("/test", methods=['GET'])
 def test():
-    return { 'test' : 'string' }
+    return "some test string"
