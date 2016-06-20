@@ -31,14 +31,27 @@ from app import views
 
 * APIS
 
-** APIs for phonetic translation
+** Introduction
+
+*** List of APIs
+
+Following is the list of the APIs used
++ phonetic-trans
++ phonetic-translive
++ language-translive
+
+*** phonetic API introduction
 
 We use pickle library for fast loading of the dictionary whenever the server
 starts for the first time.
-We have two APIs at present translate and translate live , translate live gets
-the translation from the web using [[http://www.phonemicchart.com/]] .
+translate live gets the translation from the web using [[http://www.phonemicchart.com/]] .
 The translation from the web is however slow at present and is not used in the
 demo, but only in the test cases.
+
+*** language translation API
+    For language translation, API of https://tech.yandex.com is used.
+
+** imports
 
 #+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
 # -*- coding: utf-8 -*-
@@ -50,11 +63,25 @@ import pickle
 from dateutil.parser import parse
 from datetime import datetime
 
+#+END_SRC
+
+** setting list and keys
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
 word_list = pickle.load( open( "word_list.p", "rb" ) )
 
+translatekey = 'trnsl.1.1.20160620T044235Z.009e3fdaf079e045.51ec20ede6d14038c2cb193de1f8891c28dfc749'
 
-@app.route("/translate", methods=['POST'])
-def trans():
+#+END_SRC
+
+** phonetic-trans API
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/phonetic-trans", methods=['POST'])
+def phonetictrans():
 
     sentence = request.json['sentence']
     words = sentence.split()
@@ -70,8 +97,15 @@ def trans():
 
     return " ".join(answer)
 
-@app.route("/translatelive", methods=['POST'])
-def translive():
+#+END_SRC
+
+** phonetic-transelive API
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/phonetic-translive", methods=['POST'])
+def phonetictranslive():
 
     sentence = request.json['sentence']
     words = sentence.split()
@@ -90,6 +124,40 @@ def translive():
 
     return " ".join(answer)
 
+#+END_SRC
+
+** language-trans
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/language-translive", methods=['POST'])
+def languagetranslive():
+    try:
+        sentence = request.json['sentence']
+    except:
+        return "sentence parameter not passed"
+    try :
+        fromlang = request.json['from-language']
+    except:
+        return "en"
+    try :
+        tolang = request.json['to-language']
+    except:
+        return "to language not passed"
+
+        
+    res = req.get('https://translate.yandex.net/api/v1.5/tr/translate?key='+translatekey+'&text='+sentence+'&lang='+fromlang+'-'+tolang+'&format=plain&options=0');
+    soup = bs4.BeautifulSoup(res.text)
+    ret = soup.text
+    return ret;
+
+#+END_SRC
+
+** test api
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
 
 @app.route("/test", methods=['GET'])
 def test():
