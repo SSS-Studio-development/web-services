@@ -10,13 +10,13 @@
 
 * Tests
 
-** tests using 
-#+BEGIN_SRC bash :tangle ../../tests/test.sh :eval no
+** tests using cURL
+#+BEGIN_SRC bash :tangle ../../tests/test_list.sh :eval no
 # -*- coding: utf-8 -*-
 #! tests for the rest APIs 
 
-echo "requesting for phoneticd translation of sentence 'between hello word school' :"
-curl -H "Content-Type: application/json" -X POST -d '{"sentence":"between hello world school"}' http://localhost:5000/translate
+echo "requesting for phoneticd translation of sentence 'between the world we are stuck and between the school' :"
+curl -H "Content-Type: application/json" -X POST -d '{"sentence":"between the world we are stuck and between the school"}' http://localhost:5000/translate
 echo
 echo "response received"
 
@@ -30,7 +30,27 @@ curl -H "Content-Type: application/json" -X POST -d '{"sentence":"anonymous"}' h
 echo 
 echo "response received"
 
+#+END_SRC
 
+
+#+BEGIN_SRC bash :tangle ../../tests/test_live.sh :eval no
+# -*- coding: utf-8 -*-
+#! tests for the rest APIs 
+
+echo "requesting for phoneticd translation of sentence 'between the world we are stuck and between the school' :"
+curl -H "Content-Type: application/json" -X POST -d '{"sentence":"between the world we are stuck and between the school"}' http://localhost:5000/translatelive
+echo
+echo "response received"
+
+echo "requesting for phoneticd translation of word 'excited' :"
+curl -H "Content-Type: application/json" -X POST -d '{"sentence":"excited"}' http://localhost:5000/translatelive
+echo 
+echo "response received"
+
+echo "requesting for phoneticd translation of word 'anonymous' :"
+curl -H "Content-Type: application/json" -X POST -d '{"sentence":"anonymous"}' http://localhost:5000/translatelive
+echo 
+echo "response received"
 
 #+END_SRC
 

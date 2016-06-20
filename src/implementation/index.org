@@ -11,11 +11,12 @@
 * Imports
 
 ** Imports for Python API
+Following imports are used for the flask app.
+
 #+BEGIN_SRC python :tangle ../../code/app/__init__.py :eval no
 # -*- coding: utf-8 -*-
 from flask import Flask
 from flask import request
-from flask_cors import CORS
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -31,6 +32,13 @@ from app import views
 * APIS
 
 ** APIs for phonetic translation
+
+We use pickle library for fast loading of the dictionary whenever the server
+starts for the first time.
+We have two APIs at present translate and translate live , translate live gets
+the translation from the web using [[http://www.phonemicchart.com/]] .
+The translation from the web is however slow at present and is not used in the
+demo, but only in the test cases.
 
 #+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
 # -*- coding: utf-8 -*-
@@ -92,6 +100,7 @@ def test():
 
 * run
 
+Running the app
 ** running the app
 
 #+BEGIN_SRC python :tangle ../../code/run.py :eval no
@@ -106,13 +115,107 @@ app.run(debug=True)
 
 #+END_SRC
 
-* word list
 
-#+BEGIN_SRC python :tangle ../../code/word_list.p :eval no
+* setup file
+
+the depedencies of the web application and virtual enviornment setup can be
+done by the following file
+
+#+BEGIN_SRC bash :tangle ../../code/setup.sh :eval no
 # -*- coding: utf-8 -*-
 
-[[word_list.p]]
+#! bash script for setting up enviornment for flask app
+
+
+sudo apt-get install python-virtualenv
+
+virtualenv flask
+
+flask/bin/pip install flask
+
+flask/bin/pip install flask-login
+
+flask/bin/pip install requests
+
+flask/bin/pip install requests
+
+flask/bin/pip install bs4
+
+flask/bin/pip install python-dateutil
+
+flask/bin/pip install datetime
+
+flask/bin/pip install -U flask-cors
 
 
 #+END_SRC
 
+
+* Frontend changes
+
+ +  The following function is used to make the change in the front end
+   javascript files .
+ +  The get_phonetic makes a HTTP request to server to get the phonetic
+    translations
+ +  Anno_highlight is used to replace the text with corresponding phonetic
+    translations.
+
+#+BEGIN_SRC javascript :tangle ../../code/frontend.js :eval no
+function get_phonetics(str){
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "//localhost:5000/translate", true); // enter the actual URL for web-service here
+  xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+  xhr.send(JSON.stringify({"sentence":str}));
+
+
+  xhr.onreadystatechange = processRequest;
+
+  function processRequest(e)
+  {
+    if (xhr.readyState == 4)
+    {
+      console.log('pho trans set');
+      phonetic_trans = xhr.responseText;
+    }
+  }
+
+}
+
+#+END_SRC
+
+
+#+BEGIN_SRC javascript :tangle ../../code/frontend.js :eval no
+
+function anno_phonetic(xpath) {
+    //if element is already translated
+  if (anno_getElementByXpath(xpath).id != "phonetic" || !(anno_getElementByXpath(xpath).id)) {
+    var text_to_translate = $j(anno_getElementByXpath(xpath)).html();
+    get_phonetics(text_to_translate);
+    var timer = window.setInterval
+    (
+      function ()
+      {
+        if(typeof phonetic_trans !== "default_value")
+        {
+          console.log("text changing");
+          $j(anno_getElementByXpath(xpath)).text(phonetic_trans);
+          phonetic_trans = "default_value";
+          window.clearInterval(timer);
+          $j(anno_getElementByXpath(xpath)).wrapInner("<span id='phonetic'></span>");
+        }
+        else
+        {
+          console.log("returned without change");
+        }
+      }
+      ,1000
+    );
+  }
+  else {
+        console.log('already translated');
+    }
+}
+
+#+END_SRC
