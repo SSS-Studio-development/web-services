@@ -13,7 +13,7 @@
 ** Imports for Python API
 Following imports are used for the flask app.
 
-#+BEGIN_SRC python :tangle ../../code/app/__init__.py :eval no
+#+BEGIN_SRC python :tangle ../../../code/app12/__init__.py :eval no
 # -*- coding: utf-8 -*-
 from flask import Flask
 from flask import request
@@ -151,28 +151,6 @@ def languagetranslive():
     soup = bs4.BeautifulSoup(res.text)
     ret = soup.text
     return ret;
-
-#+END_SRC
-
-** rtag
-
-#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
-# -*- coding: utf-8 -*-
-
-@app.route("/rtag", methods=['POST'])
-def rtag():
-    try:
-        sentence = request.json['sentence']
-    except:
-        return "sentence parameter not passed"
-        
-    words=sentence.split()
-    answer=""
-    for word in words :
-        word = '<span property="date">'+word+'</span>'
-        answer=answer+word
-
-    return answer
 
 #+END_SRC
 

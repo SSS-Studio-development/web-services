@@ -160,21 +160,19 @@ def languagetranslive():
 # -*- coding: utf-8 -*-
 
 @app.route("/rtag", methods=['POST'])
-def rtag():
+def languagetranslive():
     try:
         sentence = request.json['sentence']
     except:
         return "sentence parameter not passed"
         
     words=sentence.split()
-    answer=""
-    for word in words :
-        word = '<span property="date">'+word+'</span>'
-        answer=answer+word
-
-    return answer
+    for word in words:
+        word = word.lower()
+        word = "<date>"+word+"<date>"
 
 #+END_SRC
+
 
 ** test api
 
