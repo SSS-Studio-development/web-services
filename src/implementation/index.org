@@ -1,0 +1,170 @@
+#+title: Implemention of making a webservice for language translation
+#+AUTHOR: Raj Manvar
+#+DATE: [2016-06-16 Thu]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+
+* Imports
+
+** Imports for Python API
+Following imports are used for the flask app.
+
+#+BEGIN_SRC python :tangle ../../code/app/__init__.py :eval no
+# -*- coding: utf-8 -*-
+from flask import Flask
+from flask import request
+from flask_cors import CORS
+
+app = Flask(__name__)
+
+CORS(app)
+
+
+from app import views
+
+#+END_SRC
+
+
+* APIS
+
+** imports
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+from app import app
+from flask import request
+import requests as req
+import bs4
+import pickle
+from dateutil.parser import parse
+from datetime import datetime
+
+#+END_SRC
+
+** setting list and keys
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+translatekey = 'trnsl.1.1.20160620T044235Z.009e3fdaf079e045.51ec20ede6d14038c2cb193de1f8891c28dfc749'
+
+#+END_SRC
+
+** language-trans
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/language-translive", methods=['POST'])
+def languagetranslive():
+    try:
+        sentence = request.json['sentence']
+    except:
+        return "sentence parameter not passed"
+    try :
+        fromlang = request.json['from-language']
+    except:
+        return "en"
+    try :
+        tolang = request.json['to-language']
+    except:
+        return "to language not passed"
+
+        
+    res = req.get('https://translate.yandex.net/api/v1.5/tr/translate?key='+translatekey+'&text='+sentence+'&lang='+fromlang+'-'+tolang+'&format=plain&options=0');
+    soup = bs4.BeautifulSoup(res.text)
+    ret = soup.text
+    return ret;
+
+#+END_SRC
+
+** rtag
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/rtag", methods=['POST'])
+def rtag():
+    try:
+        sentence = request.json['sentence']
+    except:
+        return "sentence parameter not passed"
+        
+    words=sentence.split()
+    answer=""
+    for word in words :
+        word = '<span property="date">'+word+'</span>'
+        answer=answer+word
+
+    return answer
+
+#+END_SRC
+
+** test api
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/test", methods=['GET'])
+def test():
+    return "some test string"
+
+#+END_SRC
+
+
+* run
+
+Running the app
+** running the app
+
+#+BEGIN_SRC python :tangle ../../code/run.py :eval no
+# -*- coding: utf-8 -*-
+
+#!flask/bin/python
+from app import app
+
+
+app.run(debug=True)
+
+
+#+END_SRC
+
+
+* setup file
+
+the depedencies of the web application and virtual enviornment setup can be
+done by the following file
+
+#+BEGIN_SRC bash :tangle ../../code/setup.sh :eval no
+# -*- coding: utf-8 -*-
+
+#! bash script for setting up enviornment for flask app
+
+
+sudo apt-get install python-virtualenv
+
+virtualenv flask
+
+flask/bin/pip install flask
+
+flask/bin/pip install flask-login
+
+flask/bin/pip install requests
+
+flask/bin/pip install requests
+
+flask/bin/pip install bs4
+
+flask/bin/pip install python-dateutil
+
+flask/bin/pip install datetime
+
+flask/bin/pip install -U flask-cors
+
+
+#+END_SRC
+
+

@@ -1,0 +1,82 @@
+#+TITLE: Renarration Web Application
+#+AUTHOR: Sai Gollapudi @ VLEAD, IIIT Hyderabad
+#+DATE: [2016-06-24 Wed]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+* Version/Branch History
+
+- =v1.0= :: Initial version to start the doc & development of the system. 
+
+
+* Goal
+
+The goal of this project is to develop a web based Semantic Transformation System. This will enable Renarration by allowing for Annotation of existing web content. Along with Annotation, DOM node changes will also be allowed.
+
+This Semantic Transformation System is to be built as collection of several web applications and services working together to provide an overall semantically meaningful service to the end-user. 
+
+
+* Overview
+By Semantic Transformation we mean that an existing, published web page should be modifiable or transformable by any arbitrary user. In other words, the assumption is that the source page is already published and existing on the web. The modifications -- which could be CRUD operations on content -- should be performable by any arbitrary user, who may be somebody other than the author. The modified page with new semantic is what we are calling Semantically Transformed page. This transformed page exists in addition to the original source. It can be thought of as another version or variant of the original source. Source content -- which is already on the web -- would not be destroyed by this type of Semantic Transformation.
+
+We are using the term /Renarration/ to refer to the new Semantically Transformed variant of the original source page. The process of page Renarration requires two things: One, the ability to /restructure/ the original source document, and two, the ability to /transform/ the newly structured document. 
+
+
+* Requirements
+At the system level, our intent is to take in some web content and transform it. The transformation of the input content can be manual (by experts from a crowd sourced environment) or automatic (as a web service which is triggered by some event).
+
+#+CAPTION: General View of the semantic transformation system
+  [[./docs/diagrams/syst_view1.png]]
+
+In a web related context, the input is a HTML document. The output is also a HTML document. However, due to transformation, the output may or may not have
++ modified DOM elements
++ modified content
++ modified tags
++ in/excluded scripts
+
+The output /O/, therefore, is a function /F/ of expert made modifications, and input /I/.
+
+#+CAPTION: Web Content related vView of our semantic transformation system
+  [[./docs/diagrams/syst_view1.png]]
+
+At the highest level, our System requirements are
++ (Rq-F-1) Develop a web based system that is able to take an HTML marked up web page as input and output a user or system modified HTML page. 
++ (Rq-F-2) The user should be allowed to add, delete or modify content, flow or tags.
++ (Rq-F-3) The user should also be allowed to inject new scripts into the input document.
++ (Rq-F-4) The changes made by the user must persist.
+
+These system requirements would deliver us a Framework which would enable us to apply renarration concepts to specific cases.
+
+In this Sematic Transformation project work, we wish to appy renarration to two use cases: 1) English Learning, 2) Language Translation activities as well. In practice what this means is that an HTML page should be renarratable into 1) a Phonetic alphabet, and/ or 2) some other non-English language. For this our requirements are:
+
++ (Rq-Ws-1) Develop an instance of renarration that does phonetic word / page translations. That is, given an English text page, when the user selects a word, page or a DOM node, the system should modify the selected content into its English-phonetic equivalent content. These changes need not persist.
+
++ (Rq-Ws-2) Develop an instance of renarration that does date format change. That is, given an text page containing a date format, when the user selects the date and identifies a new format, the system should modify the selected content into its  equivalent new date format. These changes need not persist.
+
+
+* Design
+
+
+* Implementation
+
+
+* Unit Test
+
+  About unit testing
+* Components of a web application
+This Semantic Transformation web application is also referred to as Semantic Style Sheets or Renarration.
+
+The Semantic Transformation system will have the following multiple components:  
+1. SSS Renarrator Studio tool- This can be a web application / portal which allows one to markup a existing page. That is, annotation of an existing page with new structure happens here. Output of this tool is the restructured document. 
+2. SSS Browser tool - This can be a web application / portal or physically the SSS Renarrator Studio tool. This tool allows the users to view the transformed pages. The transformations can happen manually, or through web services (which have to be developed seperately and outside this tool)
+3. SSS Storage tool - This can be a web application which stores the annotation / markup information. This is how the restructured informaiton persists.
+4. SSS Configurator tool - This is a web application which enables a user to define or set his or her chosen Document Data Types of Namespaces. These are in-turn used to create the markup tags to be used by the SSS Renarrator Studio  to be applied as new overlay ontop of the existing, source HTML page. 
+
+
+* Software Development Life Cycle  (SDLC)
+We are planning to have a agile style development philosophy. 
+
+

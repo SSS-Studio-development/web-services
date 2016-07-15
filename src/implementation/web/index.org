@@ -1,0 +1,289 @@
+#+title: Implemention of  Adding phonetic translations for renarration web application
+#+AUTHOR: Raj Manvar
+#+DATE: [2016-06-16 Thu]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+
+* Imports
+
+** Imports for Python API
+Following imports are used for the flask app.
+
+#+BEGIN_SRC python :tangle ../../../code/app12/__init__.py :eval no
+# -*- coding: utf-8 -*-
+from flask import Flask
+from flask import request
+from flask_cors import CORS
+
+app = Flask(__name__)
+
+CORS(app)
+
+
+from app import views
+
+#+END_SRC
+
+
+* APIS
+
+** Introduction
+
+*** List of APIs
+
+Following is the list of the APIs used
++ phonetic-trans
++ phonetic-translive
++ language-translive
+
+*** phonetic API introduction
+
+We use pickle library for fast loading of the dictionary whenever the server
+starts for the first time.
+translate live gets the translation from the web using [[http://www.phonemicchart.com/]] .
+The translation from the web is however slow at present and is not used in the
+demo, but only in the test cases.
+
+*** language translation API
+    For language translation, API of https://tech.yandex.com is used.
+
+** imports
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+from app import app
+from flask import request
+import requests as req
+import bs4
+import pickle
+from dateutil.parser import parse
+from datetime import datetime
+
+#+END_SRC
+
+** setting list and keys
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+word_list = pickle.load( open( "word_list.p", "rb" ) )
+
+translatekey = 'trnsl.1.1.20160620T044235Z.009e3fdaf079e045.51ec20ede6d14038c2cb193de1f8891c28dfc749'
+
+#+END_SRC
+
+** phonetic-trans API
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/phonetic-trans", methods=['POST'])
+def phonetictrans():
+
+    sentence = request.json['sentence']
+    words = sentence.split()
+    answer = []
+    for word in words :
+
+        word = word.lower()
+        if word in word_list:
+            answer.append(word_list[word])
+        else :
+            answer.append(word)
+
+
+    return " ".join(answer)
+
+#+END_SRC
+
+** phonetic-transelive API
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/phonetic-translive", methods=['POST'])
+def phonetictranslive():
+
+    sentence = request.json['sentence']
+    words = sentence.split()
+    answer = []
+    for word in words :
+
+        word = word.lower()
+        res = req.get('http://www.phonemicchart.com/transcribe/?w='+word)
+        soup = bs4.BeautifulSoup(res.text)
+        ret = soup.center
+        if ret:
+            answer.append(ret.string)
+        else :
+            answer.append(word)
+
+
+    return " ".join(answer)
+
+#+END_SRC
+
+** language-trans
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/language-translive", methods=['POST'])
+def languagetranslive():
+    try:
+        sentence = request.json['sentence']
+    except:
+        return "sentence parameter not passed"
+    try :
+        fromlang = request.json['from-language']
+    except:
+        return "en"
+    try :
+        tolang = request.json['to-language']
+    except:
+        return "to language not passed"
+
+        
+    res = req.get('https://translate.yandex.net/api/v1.5/tr/translate?key='+translatekey+'&text='+sentence+'&lang='+fromlang+'-'+tolang+'&format=plain&options=0');
+    soup = bs4.BeautifulSoup(res.text)
+    ret = soup.text
+    return ret;
+
+#+END_SRC
+
+** test api
+
+#+BEGIN_SRC python :tangle ../../code/app/views.py :eval no
+# -*- coding: utf-8 -*-
+
+@app.route("/test", methods=['GET'])
+def test():
+    return "some test string"
+
+#+END_SRC
+
+
+* run
+
+Running the app
+** running the app
+
+#+BEGIN_SRC python :tangle ../../code/run.py :eval no
+# -*- coding: utf-8 -*-
+
+#!flask/bin/python
+from app import app
+
+
+app.run(debug=True)
+
+
+#+END_SRC
+
+
+* setup file
+
+the depedencies of the web application and virtual enviornment setup can be
+done by the following file
+
+#+BEGIN_SRC bash :tangle ../../code/setup.sh :eval no
+# -*- coding: utf-8 -*-
+
+#! bash script for setting up enviornment for flask app
+
+
+sudo apt-get install python-virtualenv
+
+virtualenv flask
+
+flask/bin/pip install flask
+
+flask/bin/pip install flask-login
+
+flask/bin/pip install requests
+
+flask/bin/pip install requests
+
+flask/bin/pip install bs4
+
+flask/bin/pip install python-dateutil
+
+flask/bin/pip install datetime
+
+flask/bin/pip install -U flask-cors
+
+
+#+END_SRC
+
+
+* Frontend changes
+
+ +  The following function is used to make the change in the front end
+   javascript files .
+ +  The get_phonetic makes a HTTP request to server to get the phonetic
+    translations
+ +  Anno_highlight is used to replace the text with corresponding phonetic
+    translations.
+
+#+BEGIN_SRC javascript :tangle ../../code/frontend.js :eval no
+function get_phonetics(str){
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "//localhost:5000/translate", true); // enter the actual URL for web-service here
+  xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+  xhr.send(JSON.stringify({"sentence":str}));
+
+
+  xhr.onreadystatechange = processRequest;
+
+  function processRequest(e)
+  {
+    if (xhr.readyState == 4)
+    {
+      console.log('pho trans set');
+      phonetic_trans = xhr.responseText;
+    }
+  }
+
+}
+
+#+END_SRC
+
+
+#+BEGIN_SRC javascript :tangle ../../code/frontend.js :eval no
+
+function anno_phonetic(xpath) {
+    //if element is already translated
+  if (anno_getElementByXpath(xpath).id != "phonetic" || !(anno_getElementByXpath(xpath).id)) {
+    var text_to_translate = $j(anno_getElementByXpath(xpath)).html();
+    get_phonetics(text_to_translate);
+    var timer = window.setInterval
+    (
+      function ()
+      {
+        if(typeof phonetic_trans !== "default_value")
+        {
+          console.log("text changing");
+          $j(anno_getElementByXpath(xpath)).text(phonetic_trans);
+          phonetic_trans = "default_value";
+          window.clearInterval(timer);
+          $j(anno_getElementByXpath(xpath)).wrapInner("<span id='phonetic'></span>");
+        }
+        else
+        {
+          console.log("returned without change");
+        }
+      }
+      ,1000
+    );
+  }
+  else {
+        console.log('already translated');
+    }
+}
+
+#+END_SRC

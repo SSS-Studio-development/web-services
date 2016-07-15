@@ -1,0 +1,69 @@
+#+title:Documentation of Adding phonetic translations for renarration web application
+#+AUTHOR: Raj Manvar
+#+DATE: [2016-06-16 Thu]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../../../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+* requirements
+
++ Requirement is to build web-services for providing user friendly renarrations
+
++ for the first release webservices for phonetic translations is made.
+
+
+
+* road map
+
++ for the first part we built a dictionary of 1000 common words with the
+  phonetic translation.
++ Updated the front end for facilitating to get the phonetic translation.
++ Updated by getting the translation from the web.
+
+
+* APIs for first release
+
+|-------------+----------------+--------------------+-------------------+-----------------------|
+| API usage   | URL            | header             | payload           | result                |
+|             |                | required           | required          |                       |
+|-------------+----------------+--------------------+-------------------+-----------------------|
+| Translation | /translate     | 'Content-type':    | 'sentence':       | returns phonetic      |
+| of sentence |                | 'application/json' | required sentence | translation of        |
+| from list   |                |                    |                   | words in the sentence |
+|             |                |                    |                   | from the list.        |
+|-------------+----------------+--------------------+-------------------+-----------------------|
+| Translation | /translatelive | 'Content-type':    | 'sentence':       | returns phonetic      |
+| from web    |                | 'application/json' | required sentence | translation of words  |
+|             |                |                    |                   | from the web.         |
+|-------------+----------------+--------------------+-------------------+-----------------------|
+|             |                |                    |                   |                       |
+
+
+** remaining cases
+
++ If any of the word in the sentence isn't found in the word_list then the same
+  word will be returned
++ The sentence is expected to have words and punctuation marks separated by
+  space, failing which translation till the required point will be made and the
+  remaining sentence will be returned as it is.
+
+
+* Testing
+
+  + For testing the APIs cURL tool has been used to send and receive the response
+  + The tests are included in the test.sh file 
+
+
+* Demo
+
++ Demo of the test cases running .
++ Demo of the phonetic translations.
+    
+
+* Future path
+
++ adding language translation according to the language argument given
++ giving a personalized view to user of dates and currency when the persistant
+  user database is built.
